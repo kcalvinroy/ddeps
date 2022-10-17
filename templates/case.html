@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Case{% endblock %}
+
+
+{% block content %}
+<div class="row main_content">
+    <div class="column large-6">
+        <div class="section-intro" data-aos="fade-up">
+            <h3 class="subhead">Case Name: {{ name }}</h3>
+
+            <h2 class="display-1">
+                Case ID: {{ caseID }}
+            </h2>
+            <h2 class="display-1">
+                Status: {{ status }}
+            </h2>
+            <h2 class="display-1">
+                Created: {{ datecreated }}
+            </h2>
+        </div>
+    </div>
+    
+
+    <div class="column large-6">
+        <div class="footer-contacts">
+            {% if RoleID == '2' or RoleID == '3' %}
+            <div class="footer-contact-block" data-aos="fade-up">
+                <h5 class="footer-contact-block__header">
+                    Assign Investigators
+                </h5>
+                <p class="footer-contact-block__content">
+                    <form action="{{ url_for('assign', caseID=caseID) }}" method="post" autocomplete="off">
+                        <div hidden>
+                            <input type="text" name="caseID" id="caseID" value="{{ caseID }}">
+                        </div>
+                        <select class="h-full-width" id="userID" for="userID" name="userID">
+                            <option value="Option 0">Available Investigators</option>
+                            {% for (userID, username) in available_users %}                            
+                            <option value="{{ userID }}">{{ username }}</option>
+                            {% endfor %}
+                        </select>
+                        {% if mes %}
+                        <div class="alert-box alert-box--success hideit">
+                            <p>{{ mes }}</p>
+                            <i class="fa fa-times alert-box__close" aria-hidden="true"></i>
+                        </div><!-- end success -->
+                        {% endif %}
+                        {% if msg %}
+                        <div class="alert-box alert-box--error hideit">
+                            <p>{{ msg }}</p>
+                            <i class="fa fa-times alert-box__close" aria-hidden="true"></i>
+                        </div>
+                        {% endif %}
+                        <input class="btn--primary h-full-width" type="submit" value="Assign">
+                    </form>
+                </p>
+            </div> <!-- end footer-contact-block -->
+            {% endif %}
+            <div class="footer-contact-block" data-aos="fade-up">
+                <h5 class="footer-contact-block__header">
+                    Assigned Investigators
+                </h5>
+                
+                <p class="footer-contact-block__content">
+                    <table>
+                        <tbody>
+                            {% for (userID, username, roleID) in cursor2 %} 
+                        <tr> 
+                            <td>
+                                {{ username }}
+                            </td>
+                            {% if RoleID == '2' or RoleID == '3' %}
+                            <td>
+                                
+                                {{ roleID }}
+                            </td>
+                            
+                            <td>
+                                <a class="btn btn--stroke half-bottom" href="{{ url_for('remove', caseID=caseID, userID=userID) }}" onclick="return confirm('Are you sure you want to remove off case?')">Remove</a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+ <div class="column large-13">
+    
+        <h2 class="display-1 b">
+            Evidence Files
+        </h2>
+        {% if case_evidence %}
+        <div class="table-responsive">
+   
+            <table>
+                    <thead>
+                    <tr>
+                        
+                        <th>File Name</th>
+                        <th>Hash</th>
+                        <th>Timestamp</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    
+                    {% for (evidenceID, caseID, filename, hash, time) in case_evidence %}
+                    <tr>
+                            
+                            <td>{{ filename }}</td>
+                            <td>{{ hash }}</td>
+                            <td>{{ time }}</a></td>
+                            <td>
+                                <a class="btn btn--primary half-bottom" href="{{ url_for('download', hash=hash) }}">Download</a>
+                                <a class="btn half-bottom" href="view_reports_{{ evidenceID }}">View Reports</a>
+                                {% if RoleID == '2' or RoleID == '1' or RoleID == '3' %}
+                                    {% if status == 'Open' or status == 'open' %}
+                                    <a class="btn half-bottom" href="report_{{ evidenceID }}">Report</a>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                    </tr>
+                    {% endfor %}
+        
+                    </tbody>
+            </table>
+        </div>
+        {% endif %}
+        {% if not case_evidence %}
+        <div class="table-responsive">
+            <p>
+                Nothing Uploaded
+            </p>   
+        </div>
+        {% endif %}
+        
+        
+    
+</div>
+
+
+{% endblock %}

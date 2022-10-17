@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+
+{% block content %}
+
+<div class="row main_content">
+    <div class="row large-full">
+            <h3 class="subhead"><b>Welcome back, </b>{{ username }}.</h3>
+    </div>
+    <div class="table-responsive">
+        <table>
+                <thead>
+                <tr>
+                    <th>Case ID</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Date Created</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for (caseID, name, status, datecreated) in cursor %}
+                <tr>
+                        <td>{{ caseID }}</td>
+                        <td>{{ name }}</td>
+                        <td>{{ status }}</td>
+                        <td>{{ datecreated }}</td>
+                        <td>
+                            <a class="btn btn--primary half-bottom" href="{{ caseID }}">View</a>
+                            {% if RoleID == '2' or RoleID == '3' %}
+                            <a class="btn half-bottom" href="{{ url_for('edit', caseID=caseID) }}">Edit</a>
+                            {% endif %}
+                            {% if RoleID == '2' or RoleID == '3' %}
+                                {% if status == 'Open' or status == 'open' %}
+                                <a class="btn half-bottom" href="{{ url_for('add_evidence', caseID=caseID) }}">Add Evidence</a>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </a>
+                </tr>
+                
+                {% endfor %}
+                </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
