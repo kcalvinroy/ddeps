@@ -21,7 +21,7 @@ pinata_api_secret = 'ee7d3d7022a5f5cdd8aaf9f161b0f7f97bfbf530d3955c86ba0cf3ad348
 pinata = Pinning(PINATA_API_KEY=pinata_api_key, PINATA_API_SECRET=pinata_api_secret)
 gateway="https://ipfs.io/ipfs/"
 
-UPLOAD_FOLDER = '/app/uploads'
+UPLOAD_FOLDER = './env'
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER 
@@ -265,7 +265,7 @@ def upload_file(caseId):
     cursor.execute('INSERT INTO `evidence` (`caseID`, `filename`, `hash`) VALUES(%s, %s, %s)',(caseID, filename, cid))
     connection.commit()
     mes = 'Evidence file uploaded successfully'
-    os.remove('uploads/'+filename)
+    os.remove('env/'+filename)
     return render_template("add_evidence.html", msg=msg, mes=mes, RoleID=session['roleID'])
 
 
