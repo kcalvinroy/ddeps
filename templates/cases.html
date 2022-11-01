@@ -32,7 +32,7 @@
                             {% if RoleID == '2' or RoleID == '3' %}
                             <a class="btn half-bottom" href="{{ url_for('edit', caseID=caseID) }}">Edit</a>
                             {% endif %}
-                            {% if RoleID == '2' or RoleID == '3' %}
+                            {% if RoleID == '2' or RoleID == '3' or RoleID == '0' %}
                                 {% if status == 'Open' or status == 'open' %}
                                 <a class="btn half-bottom" href="{{ url_for('add_evidence', caseID=caseID) }}">Add Evidence</a>
                                 {% endif %}
