@@ -31,11 +31,11 @@ salt = "5gz69"
 connection = database.connect(user = 'f95670xsf3o50ggn', password = 'bogbq5jykdzoa0jq', host='iu51mf0q32fkhfpl.cbetxkdyhwsb.us-east-1.rds.amazonaws.com', database = 'u35lk00pibdan3lp')
 connection1 = database.connect(user = 'f95670xsf3o50ggn', password = 'bogbq5jykdzoa0jq', host='iu51mf0q32fkhfpl.cbetxkdyhwsb.us-east-1.rds.amazonaws.com', database = 'u35lk00pibdan3lp')
 connection2 = database.connect(user = 'f95670xsf3o50ggn', password = 'bogbq5jykdzoa0jq', host='iu51mf0q32fkhfpl.cbetxkdyhwsb.us-east-1.rds.amazonaws.com', database = 'u35lk00pibdan3lp')
-connection3 = database.connect(user = 'f95670xsf3o50ggn', password = 'bogbq5jykdzoa0jq', host='iu51mf0q32fkhfpl.cbetxkdyhwsb.us-east-1.rds.amazonaws.com', database = 'u35lk00pibdan3lp')
+#connection3 = database.connect(user = 'f95670xsf3o50ggn', password = 'bogbq5jykdzoa0jq', host='iu51mf0q32fkhfpl.cbetxkdyhwsb.us-east-1.rds.amazonaws.com', database = 'u35lk00pibdan3lp')
 cursor = connection.cursor()
 cursor1 = connection1.cursor()
 cursor2 = connection2.cursor()
-cursor3 = connection3.cursor()
+#cursor3 = connection3.cursor()
 
 @app.before_request
 def before_request():
