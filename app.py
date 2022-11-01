@@ -21,7 +21,7 @@ pinata_api_secret = 'ee7d3d7022a5f5cdd8aaf9f161b0f7f97bfbf530d3955c86ba0cf3ad348
 pinata = Pinning(PINATA_API_KEY=pinata_api_key, PINATA_API_SECRET=pinata_api_secret)
 gateway="https://ipfs.io/ipfs/"
 
-UPLOAD_FOLDER = '/uploads'
+UPLOAD_FOLDER = './uploads'
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER 
@@ -248,11 +248,12 @@ def evidence():
         return redirect(url_for('login'))
     return render_template("evidence.html", cursor=cursor, RoleID=session['roleID'])
 
-@app.route('/upload', methods = ['GET', 'POST'])
-def upload_file():
+@app.route('/upload_<int:caseId>', methods = ['GET', 'POST'])
+def upload_file(caseId):
     mes=''
     msg=''
-    caseID = str(request.form['caseID'])
+    # caseID = str(request.form['caseID'])
+    caseID =str(caseId)
     file = request.files['file']
     filename = secure_filename(file.filename)
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
