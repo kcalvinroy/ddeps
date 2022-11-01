@@ -21,17 +21,17 @@ pinata_api_secret = 'ee7d3d7022a5f5cdd8aaf9f161b0f7f97bfbf530d3955c86ba0cf3ad348
 pinata = Pinning(PINATA_API_KEY=pinata_api_key, PINATA_API_SECRET=pinata_api_secret)
 gateway="https://ipfs.io/ipfs/"
 
-UPLOAD_FOLDER = '/home/ck/Desktop/DigEvid/DDEPS/uploads'
+UPLOAD_FOLDER = './uploads'
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER 
 app.secret_key = '12345678'
 salt = "5gz69"
 
-connection = database.connect(user = 'admin', password = '12345678', host='localhost', database = 'dedb')
-connection1 = database.connect(user = 'admin', password = '12345678', host='localhost', database = 'dedb')
-connection2 = database.connect(user = 'admin', password = '12345678', host='localhost', database = 'dedb')
-connection3 = database.connect(user = 'admin', password = '12345678', host='localhost', database = 'dedb')
+connection = database.connect(user = 'f95670xsf3o50ggn', password = 'bogbq5jykdzoa0jq', host='iu51mf0q32fkhfpl.cbetxkdyhwsb.us-east-1.rds.amazonaws.com', database = 'u35lk00pibdan3lp')
+connection1 = database.connect(user = 'f95670xsf3o50ggn', password = 'bogbq5jykdzoa0jq', host='iu51mf0q32fkhfpl.cbetxkdyhwsb.us-east-1.rds.amazonaws.com', database = 'u35lk00pibdan3lp')
+connection2 = database.connect(user = 'f95670xsf3o50ggn', password = 'bogbq5jykdzoa0jq', host='iu51mf0q32fkhfpl.cbetxkdyhwsb.us-east-1.rds.amazonaws.com', database = 'u35lk00pibdan3lp')
+connection3 = database.connect(user = 'f95670xsf3o50ggn', password = 'bogbq5jykdzoa0jq', host='iu51mf0q32fkhfpl.cbetxkdyhwsb.us-east-1.rds.amazonaws.com', database = 'u35lk00pibdan3lp')
 cursor = connection.cursor()
 cursor1 = connection1.cursor()
 cursor2 = connection2.cursor()
