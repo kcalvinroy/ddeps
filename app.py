@@ -74,12 +74,18 @@ def login():
             session['username']=account[1]
             session['email']=account[2]
             session['roleID']=str(account[4])
+            #Logs
+            cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Logged into system'))
+            connection.commit()
             # return session['roleID']
             #redirect to homepage
             return redirect(url_for('cases'))
         else:
             # Account not in existance or incorect logins
             msg = 'Incorrect username/password!'
+            #Logs
+            cursor.execute('INSERT INTO logs_activity (activity) VALUES ("Failed Login")')
+            connection.commit()
     return render_template('login.html', msg=msg)
 
 @app.route("/cases", methods=['GET', 'POST'])
@@ -101,6 +107,9 @@ def cases():
 @app.route('/logout')
 def logout():
     # Remove session data, logging out the user
+    #Logs
+    cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Logged out'))
+    connection.commit()
     session.pop('loggedin', None)
     session.pop('id', None)
     session.pop('username', None)
@@ -128,12 +137,21 @@ def register():
                     # If account exists show error and validation checks
                     if account:
                         msg = 'Account already exits!'
+                        #Logs
+                        cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Tried Submit account details already in system'))
+                        connection.commit()
                     elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
                         msg='Invalid email address!'
+                        #Logs
+                        cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Tried Submit invalid account email in system'))
+                        connection.commit()
                     elif not re.match(r'[A-Za-z0-9]+', username):
                         msg = 'Username must only contain characters and numbers!'
                     elif not username or not password or not email:
                         msg = 'Please fill out the form!'
+                        #Logs
+                        cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Tried Submit empty form'))
+                        connection.commit()
                     else:
                         password=password+salt
                         h = hashlib.md5(password.encode())
@@ -142,6 +160,9 @@ def register():
                         cursor.execute('INSERT INTO user(username, email, password, roleID) VALUES(%s, %s, %s, %s)', (username, email, password, roleID,))
                         connection.commit()
                         mes = 'Successfully registered!'
+                        #Logs
+                        cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Registered user to system'))
+                        connection.commit()
                 except database.Error as e:
                     msg='Error Creating c: {e}' 
             elif request.method == 'POST':
@@ -181,6 +202,9 @@ def edit_user(userID):
                     cursor.execute('UPDATE user SET username=%s, email=%s, password=%s, roleID=%s WHERE userID = %s', (username, email, password, roleID, userid))
                     connection.commit()
                     mes = 'Successfully Edited!'
+                    #Logs
+                    cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Edited account details in system'))
+                    connection.commit()
             except database.Error as e:
                 msg='Error editing: {e}'
             return redirect(url_for('users'))
@@ -206,8 +230,14 @@ def add_case():
                 cursor.execute('INSERT INTO case_file(name, status) VALUES(%s, %s)', (name, status))
                 connection.commit()
                 mes='Successfully Created case'
+                #Logs
+                cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Created Case'))
+                connection.commit()
             except database.Error as e:
                 msg='Error Creating case: {e}'
+                #Logs
+                cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Failed to create case'))
+                connection.commit()
     return render_template("add_case.html", mes=mes, msg=msg, RoleID=session['roleID'])
 
 @app.route("/edit<int:caseID>", methods=['GET', 'POST'])
@@ -227,8 +257,14 @@ def edit(caseID):
                 cursor.execute('UPDATE case_file SET name=%s, status=%s where caseID=%s', (name, status,caseid))
                 connection.commit()
                 mes='Successfully Edited case'
+                #Logs
+                cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Successfuly edited case'))
+                connection.commit()
             except database.Error as e:
                 msg='Error editing case: {e}'
+                #Logs
+                cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Failed to edit case'))
+                connection.commit()
     return render_template("edit_case.html", mes=mes, msg=msg,  cursor2 = cursor2, RoleID=session['roleID'])
 
 @app.route("/add_evidence_<string:caseID>", methods=['GET', 'POST'])
@@ -248,12 +284,11 @@ def evidence():
         return redirect(url_for('login'))
     return render_template("evidence.html", cursor=cursor, RoleID=session['roleID'])
 
-@app.route('/upload_<int:caseId>', methods = ['GET', 'POST'])
-def upload_file(caseId):
+@app.route('/upload', methods = ['GET', 'POST'])
+def upload_file():
     mes=''
     msg=''
-    # caseID = str(request.form['caseID'])
-    caseID =str(caseId)
+    caseID = str(request.form['caseID'])
     file = request.files['file']
     filename = secure_filename(file.filename)
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -265,7 +300,11 @@ def upload_file(caseId):
     cursor.execute('INSERT INTO `evidence` (`caseID`, `filename`, `hash`) VALUES(%s, %s, %s)',(caseID, filename, cid))
     connection.commit()
     mes = 'Evidence file uploaded successfully'
-    os.remove('env/'+filename)
+    os.remove('uploads/'+filename)
+    #Logs
+    cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Successfuly uploaded evidence to case'+caseID))
+    connection.commit()
+    
     return render_template("add_evidence.html", msg=msg, mes=mes, RoleID=session['roleID'])
 
 
@@ -281,6 +320,9 @@ def download(hash):
         name1=name1.replace(")","")
         link=gateway+file_hash
         r=urllib.request.urlopen(link)
+        #Logs
+        cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Downloaded evidence '+hash))
+        connection.commit()
     return send_file(r, as_attachment=True, download_name=name1) 
 
 @app.route("/report_<string:evid>", methods=['GET', 'POST'])
@@ -310,9 +352,15 @@ def report(evid):
                 connection.commit()
                 mes='Successfully submitted'
                 uid=str(session['userID'])
+                #Logs
+                cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Added report to evidence '+evidenceID+' in case '+caseID))
+                connection.commit()
 
             except database.Error as e:
                 msg='Error submitting report: {e}'
+                #Logs
+                cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Failed to add report to evidence '+evidenceID+' in case '+caseID))
+                connection.commit()
     return render_template("report.html", mes=mes, msg=msg, userID=uid, evidenceID=evidence, caseID=case, filename=file, hash=has, timestamp=tim, RoleID=session['roleID'])
 
 
@@ -334,9 +382,15 @@ def add_report():
                 cursor.execute('INSERT INTO report(caseID, evidenceID, userID, data) VALUES(%s, %s, %s, %s)', (caseID, evidenceID, userID, data))
                 connection.commit()
                 mes='Successfully submitted'
+                #Logs
+                cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Submitted report to evidence '+evidenceID+' in case '+caseID))
+                connection.commit()
                 return redirect(url_for('reports'))
             except database.Error as e:
                 msg='Error submitting report: {e}'
+                #Logs
+                cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Failed to submit report to evidence '+evidenceID+' in case '+caseID))
+                connection.commit()
         if request.method == 'GET':
             uid=str(session['userID'])
         
@@ -359,8 +413,9 @@ def view_report(reportID):
             userID=userID
             data=data
         cursor.execute('SELECT * FROM evidence WHERE evidenceID ='+evidenceID)
-
-        
+        #Logs
+        cursor2.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Viewed report '+reportid))
+        connection3.commit()
         
     return render_template("view_report.html", mes=mes, msg=msg, cursor2=cursor, cursor=cursor, reportID=reportID, caseID=caseID, evidenceID=evidenceID, userID=userID, data=data, RoleID=session['roleID'])
 
@@ -387,11 +442,25 @@ def view_reports(evidenceID):
     return render_template("reports.html", cursor=cur, RoleID=session['roleID'])
 
 
+@app.route("/logs", methods=['GET', 'POST'])
+def logs():
+    if 'loggedin' in session and session['roleID'] == '2' or 'loggedin' in session and session['roleID'] == '3':
+
+        cursor.execute('SELECT * FROM logs_activity order by timestamp desc')
+        cur=cursor.fetchall()
+    else:
+        return redirect(url_for('login'))
+    return render_template("logs.html", cursor=cur, RoleID=session['roleID'])
+
+
 @app.route("/del_report_<string:reportID>", methods=['GET', 'POST'])
 def del_report(reportID):
     reportid=reportID
     if 'loggedin' in session:
         cursor.execute('DELETE FROM report WHERE reportID='+reportid)
+        connection.commit()
+        #Logs
+        cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Deleted report '+reportid))
         connection.commit()
     else:
         return redirect(url_for('login'))
@@ -403,6 +472,9 @@ def del_user(userID):
     if 'loggedin' in session:
         cursor.execute('DELETE FROM user WHERE userID='+userid)
         connection.commit()
+        #Logs
+        cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Deleted User '+userid))
+        connection.commit()
     else:
         return redirect(url_for('login'))
     return redirect(url_for('users'))
@@ -413,6 +485,9 @@ def del_assigned(userID, caseID):
     caseid=caseID
     if 'loggedin' in session:
         cursor.execute('DELETE FROM assigned WHERE userID='+userid+' and caseID='+caseid)
+        connection.commit()
+        #Logs
+        cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Deassigned user '+userid+' from case '+caseid))
         connection.commit()
     else:
         return redirect(url_for('login'))
@@ -426,6 +501,9 @@ def update_report(reportID, data):
         cursor.execute('UPDATE report SET data=%s WHERE reportID=%s', (reportid, udata))
         connection.commit()
         mes='Successfully submitted'
+        #Logs
+        cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Updated report '+reportid))
+        connection.commit()
     else:
         return redirect(url_for('login'))
     return redirect(url_for('view_report', reportID=reportid))
@@ -479,8 +557,14 @@ def assign(caseID):
                 cursor.execute('INSERT INTO assigned VALUES(%s, %s)', (caseID, userID))
                 connection.commit()
                 mes='Successfully Assigned'
+                #Logs
+                cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Assigned user '+userID+' to case '+caseID))
+                connection.commit()
             except database.Error as e:
                 msg='Error Assigning: {e}'
+                #Logs
+                cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Failed to assigned user '+userID+' to case '+caseID))
+                connection.commit()
     else:
         return redirect(url_for('login'))
     return redirect(url_for('case', caseID=caseid))
@@ -494,8 +578,14 @@ def remove(caseID, userID):
                 cursor.execute('DELETE FROM assigned WHERE caseID=%s AND userID=%s', (caseid,userid))
                 connection.commit()
                 mes='Successfully Removed'
+                #Logs
+                cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Deassigned user '+userid+' from case '+caseid))
+                connection.commit()
             except database.Error as e:
                 msg='Error Removing: {e}'
+                #Logs
+                cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Failed to Deassigned user '+userid+' from case '+caseid))
+                connection.commit()
     else:       
         return redirect(url_for('login'))
     return redirect(url_for('case', caseID=caseid))
