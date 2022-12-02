@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="column large-6">
+<form action="{{ url_for('login') }}" method="post">
+    <div>
+        <label class='subhead' for="username">Username:</label>
+        <input class="h-full-width" type="text" placeholder="Username" name='username' id="username" required>
+    </div>
+    <div>
+        <label class='subhead' for="password">Password:</label>
+        <input class="h-full-width" type="password" name="password" id="password" required>
+    </div>
+    {% if msg %}
+    <div class="alert-box alert-box--error hideit">
+        <p>{{ msg }}</p>
+        <i class="fa fa-times alert-box__close" aria-hidden="true"></i>
+    </div>
+    {% endif %}
+    <input class="btn--primary h-full-width" type="submit" value="Login">
+</form>
+</div>
+{% endblock %}

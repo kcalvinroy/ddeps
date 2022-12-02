@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Report{% endblock %}
+
+
+{% block content %}
+
+
+<div class="row main_content">
+    <div class="column large-6">
+        <div class="section-intro" data-aos="fade-up">
+            <h3 class="display-1">Case ID: {{ caseID }}</h3>
+
+            <h2 class="subhead">
+                Evidence ID: {{ evidenceID }}
+            </h2>
+            <h2 class="subhead">
+                User ID: {{ userID }}
+            </h2>
+            <h2 class="subhead">
+                Filename: {{ filename }}
+            </h2>
+            <h2 class="subhead">
+                Hash: {{ hash }}
+            </h2>
+            <h2 class="subhead">
+                Timestamp: {{ timestamp }}
+            </h2>
+        </div>
+    </div>
+
+    <div class="column large-6">
+        <div class="footer-contacts">
+            <div class="footer-contact-block" data-aos="fade-up">
+                <h5 class="footer-contact-block__header">
+                    Evidence report
+                </h5>
+                <p class="footer-contact-block__content">
+                    <form action="{{ url_for('add_report') }}" method="post" autocomplete="off">
+                        <div hidden>
+                            <input class="h-full-width" type="number"  value="{{ caseID }}" id="caseID" name='caseID'>
+                            <input class="h-full-width" type="number"  id="evidenceID" name='evidenceID' value="{{ evidenceID }}">
+                            <input class="h-full-width" type="number"  id="userID" name='userID' value="{{ userID }}">
+                        </div>
+                        
+                        <textarea class="h-full-width" placeholder="Evidence findings" id="data" name='data' ></textarea>
+                        {% if mes %}
+                        <div class="alert-box alert-box--success hideit">
+                            <p>{{ mes }}</p>
+                            <i class="fa fa-times alert-box__close" aria-hidden="true"></i>
+                        </div><!-- end success -->
+                        {% endif %}
+                        {% if msg %}
+                        <div class="alert-box alert-box--error hideit">
+                            <p>{{ msg }}</p>
+                            <i class="fa fa-times alert-box__close" aria-hidden="true"></i>
+                        </div>
+                        {% endif %}
+                        <input class="btn--primary h-full-width" type="submit" value="Submit">
+                    </form>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

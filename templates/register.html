@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="row main_content">
+    <div class="column large-6">
+    <form action="{{ url_for('register') }}" method="post" autocomplete="off">
+        <div>
+            <label class='subhead' for="sampleInput">Username:</label>
+            <input class="h-full-width" type="text" placeholder="Username" id="username" name='username' required>
+        </div>
+        <div>
+            <label class='subhead' for="sampleInput">Email:</label>
+            <input class="h-full-width" type="email" placeholder="example@gmail.com" id="email" name="email" required>
+        </div>
+        <div>
+            <label class='subhead' for="sampleInput">Password:</label>
+            <input class="h-full-width" type="password" placeholder="********" id="password" name="password" required>
+        </div>
+        <div>
+            <label for="status">Role:</label>
+            <div class="ss-custom-select">
+                <select class="h-full-width" id="status" name="roleID" >
+                    <option value="0">Investigator</option>
+                    <option value="1">Analyst</option>
+                    <option value="2">Chief Investigator</option>
+                    <option value="3">Admin</option>
+                    
+                </select>
+            </div>
+        </div>
+        {% if mes %}
+        <div class="alert-box alert-box--success hideit">
+            <p>{{ mes }}</p>
+            <i class="fa fa-times alert-box__close" aria-hidden="true"></i>
+        </div><!-- end success -->
+        {% endif %}
+        {% if msg %}
+        <div class="alert-box alert-box--error hideit">
+            <p>{{ msg }}</p>
+            <i class="fa fa-times alert-box__close" aria-hidden="true"></i>
+        </div>
+        {% endif %}
+        <input class="btn--primary h-full-width" type="submit" value="Register">
+    </form>
+    </div>
+</div>
+{% endblock %}
