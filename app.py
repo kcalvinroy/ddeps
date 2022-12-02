@@ -284,11 +284,12 @@ def evidence():
         return redirect(url_for('login'))
     return render_template("evidence.html", cursor=cursor, RoleID=session['roleID'])
 
-@app.route('/upload', methods = ['GET', 'POST'])
-def upload_file():
+@app.route('/upload_<int:caseId>', methods = ['GET', 'POST'])
+def upload_file(caseId):
     mes=''
     msg=''
-    caseID = str(request.form['caseID'])
+    # caseID = str(request.form['caseID'])
+    caseID =str(caseId)
     file = request.files['file']
     filename = secure_filename(file.filename)
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -300,7 +301,7 @@ def upload_file():
     cursor.execute('INSERT INTO `evidence` (`caseID`, `filename`, `hash`) VALUES(%s, %s, %s)',(caseID, filename, cid))
     connection.commit()
     mes = 'Evidence file uploaded successfully'
-    os.remove('./env'+filename)
+    os.remove('env/'+filename)
     #Logs
     cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Successfuly uploaded evidence to case'+caseID))
     connection.commit()
