@@ -74,12 +74,18 @@ def login():
             session['username']=account[1]
             session['email']=account[2]
             session['roleID']=str(account[4])
+             #Logs
+            cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Logged into system'))
+            connection.commit()
             # return session['roleID']
             #redirect to homepage
             return redirect(url_for('cases'))
         else:
             # Account not in existance or incorect logins
             msg = 'Incorrect username/password!'
+            #Logs
+            cursor.execute('INSERT INTO logs_activity (activity) VALUES ("Failed Login")')
+            connection.commit()
     return render_template('login.html', msg=msg)
 
 @app.route("/cases", methods=['GET', 'POST'])
@@ -106,6 +112,16 @@ def logout():
     session.pop('username', None)
     #Redirect to login page
     return redirect(url_for('login'))
+@app.route("/logs", methods=['GET', 'POST'])
+def logs():
+    if 'loggedin' in session and session['roleID'] == '2' or 'loggedin' in session and session['roleID'] == '3':
+
+        cursor.execute('SELECT * FROM logs_activity order by timestamp desc')
+        cur=cursor.fetchall()
+    else:
+        return redirect(url_for('login'))
+    return render_template("logs.html", cursor=cur, RoleID=session['roleID'])
+
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
