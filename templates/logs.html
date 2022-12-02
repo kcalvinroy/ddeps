@@ -1,0 +1,44 @@
+
+{% if RoleID == '2' or RoleID == '3' %}
+
+{% extends 'base.html' %}
+
+{% block title %}Activity logs{% endblock %}
+
+
+{% block content %}
+<div class="row main_content">
+    <div class="table-responsive">
+        <table>
+                <thead>
+                <tr>
+                    <th>Log ID</th>
+                    <th>Timestamp</th> 
+                    <th>User ID</th>
+                    <th>Activity</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if cursor %}
+                {% for (logID, timestamp, userID, activity) in cursor %}
+                <tr>
+                    <td>{{ logID }}</td>
+                    <td>{{ timestamp }}</td>
+                    <td>{{ userID }}</td>
+                    <td>{{ activity }}</td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+                
+                {% if not cursor %}
+                <tr>
+                    <p>No activity logs</p>
+                </tr>
+                {% endif %}
+                </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+{% endif %}
