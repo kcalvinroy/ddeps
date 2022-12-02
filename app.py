@@ -199,12 +199,12 @@ def edit_user(userID):
                     cursor.execute('UPDATE user SET username=%s, email=%s, password=%s, roleID=%s WHERE userID = %s', (username, email, password, roleID, userid))
                     connection.commit()
                     mes = 'Successfully Edited!'
-                     #Logs
+                    #logs
                     cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Edited account details in system'))
                     connection.commit()
             except database.Error as e:
                 msg='Error editing: {e}'
-            return redirect(url_for('users'))
+                return redirect(url_for('users'))
         elif request.method == 'POST':
                     # Form is empty
                     msg = 'Please fill in the form'
