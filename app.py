@@ -415,8 +415,8 @@ def view_report(reportID):
             data=data
         cursor.execute('SELECT * FROM evidence WHERE evidenceID ='+evidenceID)
         #Logs
-        cursor2.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Viewed report '+reportid))
-        connection3.commit()
+        cursor1.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Viewed report '+reportid))
+        connection1.commit()
         
     return render_template("view_report.html", mes=mes, msg=msg, cursor2=cursor, cursor=cursor, reportID=reportID, caseID=caseID, evidenceID=evidenceID, userID=userID, data=data, RoleID=session['roleID'])
 
