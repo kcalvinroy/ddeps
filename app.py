@@ -300,7 +300,7 @@ def upload_file():
     cursor.execute('INSERT INTO `evidence` (`caseID`, `filename`, `hash`) VALUES(%s, %s, %s)',(caseID, filename, cid))
     connection.commit()
     mes = 'Evidence file uploaded successfully'
-    os.remove('uploads/'+filename)
+    os.remove('./env'+filename)
     #Logs
     cursor.execute('INSERT INTO logs_activity (userID, activity) VALUES (%s, %s)', (str(session['userID']), 'Successfuly uploaded evidence to case'+caseID))
     connection.commit()
